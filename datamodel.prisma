@@ -1,0 +1,75 @@
+enum Permission {
+  ADMIN
+  USER
+}
+
+enum Shipping {
+  PostNL
+  DHL
+  DPD
+  UPS
+}
+
+type User {
+  id: ID! @id
+  name: String!
+  email: String! @unique
+  password: String!
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: [Permission] @scalarList(strategy: RELATION)
+  cart: [CartItem!]!
+}
+
+type Item {
+  id: ID! @id
+  title: String!
+  price: Int!
+  image: String!
+  largeImage: String!
+  description: String!
+  category: Category
+  subcategory: Subcategory
+  recommended: Item
+}
+
+type CartItem {
+  id: ID! @id
+  quantity: Int! @default(value: 1)
+  item: Item
+  user: User!
+}
+
+type OrderItem {
+  id: ID! @id
+  title: String!
+  description: String!
+  image: String!
+  largeImage: String!
+  price: Int!
+  quantity: Int! @default(value: 1)
+  user: User
+}
+
+type Order {
+  id: ID! @id
+  items: [OrderItem!]!
+  total: Int!
+  user: User!
+  charge: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  shippingType: Shipping @scalar(strategy: RELATION)
+}
+
+type Category {
+  id: ID! @id
+  title: String!
+  subcategories: [Subcategory]
+}
+
+type Subcategory {
+  id: ID! @id
+  title: String!
+  category: Category!
+}
